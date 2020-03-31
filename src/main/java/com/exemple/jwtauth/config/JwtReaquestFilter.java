@@ -4,7 +4,6 @@ import com.exemple.jwtauth.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Component
 public class JwtReaquestFilter extends OncePerRequestFilter {
@@ -39,9 +37,9 @@ public class JwtReaquestFilter extends OncePerRequestFilter {
 
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-            //UserDetails userDetails = this.myUserDetails.loadUserByUsername(userName);
-            if (jwtUtils.validateToken(jwt,new User(userName,"",new ArrayList<>()))){
-                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userName,null,new ArrayList<>());
+            UserDetails userDetails = this.myUserDetails.loadUserByUsername(userName);
+            if (jwtUtils.validateToken(jwt,userDetails)){
+                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
 
                  usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
